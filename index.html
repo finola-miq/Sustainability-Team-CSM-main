@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>SIM Mateo - Clean Energy Exhibit</title>
+    <link href="https://fonts.googleapis.com/css?family=Josefin+Sans&display=swap" rel="stylesheet">
+    <style>
+        /* ------------------------------
+       Base Styles
+       ------------------------------ */
+       
+        body {
+            font-family: 'Josefin Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #e0f7fa;
+            overflow-x: hidden;
+            transition: background 0.5s;
+        }
+       
+        header {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: url('assets/background.png') no-repeat center center;
+            background-size: cover;
+            z-index: 1000;
+            display: none;
+            /* Shown on instructions & interactive screens */
+            border: none;
+            /* Remove any default border if needed */
+        }
+       
+        header button {
+            padding: 15px 25px;
+            font-size: 18px;
+            background-color: #00796b;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.2s ease, background-color 0.3s;
+        }
+       
+        header button:hover {
+            transform: scale(1.1);
+            background-color: #004d40;
+        }
+        /* ------------------------------
+       Start Screen
+       ------------------------------ */
+       
+        #start-screen {
+            position: relative;
+            /* Establishes a positioning context */
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: url('assets/StartScreen.png') no-repeat center center;
+            background-size: cover;
+            text-align: center;
+            animation: fadeIn 1s forwards;
+        }
+       
+        #start-screen button {
+            position: absolute;
+            /* Positions the button relative to #start-screen */
+            bottom: 40px;
+            /* Adjust distance from the bottom */
+            right: 40px;
+            /* Adjust distance from the right */
+            font-family: 'Cinzel', serif;
+            font-size: 2.5rem;
+            /* Increased font size for a bigger appearance */
+            padding: 25px 50px;
+            /* Increased padding */
+            background: linear-gradient(45deg, #ff8a00, #e52e71);
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+       
+        #start-screen button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        /* ------------------------------
+       Instruction Container
+       ------------------------------ */
+       
+        #instruction-container {
+            display: none;
+            height: 100vh;
+            background: #e0f7fa;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            animation: fadeIn 1s forwards;
+        }
+       
+        .instruction-screen {
+            height: 100vh;
+            width: 100%;
+            position: relative;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+       
+        .instruction-screen img {
+            width: 100%;
+            height: 100vh;
+            object-fit: cover;
+            margin: 0;
+            padding: 0;
+        }
+        /* .instruction-screen p {
+            font-size: 1.5rem;
+            color: #333;
+            margin: 10px 20px;
+        } */
+       
+        #instruction-nav {
+            position: relative;
+            width: 100%;
+            height: 0;
+        }
+       
+        #instruction-back {
+            left: 40px;
+        }
+       
+        #instruction-next {
+            right: 40px;
+        }
+       
+        #instruction-nav button {
+            position: absolute;
+            bottom: 40px;
+            font-family: 'Josefin Sans', sans-serif;
+            font-size: 2.5rem;
+            padding: 25px 50px;
+            background: linear-gradient(45deg, #ff8a00, #e52e71);
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+       
+        #instruction-nav button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        /* ------------------------------
+       Trying new class for instruction buttons
+       ------------------------------ */
+       
+        .instruction-btn {
+            font-family: 'Josefin Sans', sans-serif;
+            font-size: 2.5rem;
+            padding: 25px 50px;
+            background: linear-gradient(45deg, #ff8a00, #e52e71);
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+       
+        .instruction-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        /* ------------------------------
+       Main Interactive Screen
+       ------------------------------ */
+       
+        #main-screen {
+            display: none;
+            height: 100vh;
+            overflow-y: auto;
+            animation: fadeIn 0.5s forwards;
+        }
+        /* ------------------------------
+       Controls: Add/Remove Card Buttons
+       ------------------------------ */
+       
+        #controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+       
+        #controls button {
+            font-size: 1.2rem;
+            padding: 10px 20px;
+            margin: 0 10px;
+            /* The default background can be overridden by individual button styles below */
+            background: linear-gradient(45deg, #26a69a, #00796b);
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+       
+        #controls button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        /* Specific styles for each control button */
+       
+        #controls #add-card {
+            background: #B0BD5E;
+        }
+       
+        #controls #remove-card {
+            background: #EA5F57;
+        }
+        /* ------------------------------
+       Scenario Pages
+       ------------------------------ */
+       
+        .scenario {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-top: 60px;
+            /* This pushes all the content down */
+        }
+       
+        .transparent-overlay {
+            position: absolute;
+            top: 200px;
+            /* Adjust as needed */
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 80%;
+            height: auto;
+            opacity: 0.35;
+        }
+       
+        #scenario1-page,
+        #scenario2-page {
+            height: calc(100vh - 80px);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: url('assets/background.png') no-repeat center center;
+            background-size: cover;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+       
+        #scenario1-page .scenario,
+        #scenario2-page .scenario {
+            width: 90%;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 15px;
+            background: #f1f8e9;
+            border: 1px solid #c5e1a5;
+            border-radius: 8px;
+            text-align: left;
+        }
+       
+        #scenario1-page h2,
+        #scenario2-page h2 {
+            color: #558b2f;
+        }
+       
+        .cards-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 50px;
+        }
+       
+        .card {
+            width: 50px;
+            height: 75px;
+            border: 2px solid #555;
+            margin: 5px;
+            background: #EA5F57;
+            border-radius: 4px;
+            transition: background 0.3s, transform 0.3s;
+        }
+       
+        .card.green {
+            background: #B0BD5E;
+            transform: scale(1.05);
+        }
+       
+        .message {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #424242;
+        }
+        /* ------------------------------
+       Scenario Navigation
+       ------------------------------ */
+       
+        #scenario-nav {
+            margin-top: 20px;
+        }
+       
+        #scenario-nav button {
+            font-family: 'Josefin Sans', sans-serif;
+            font-size: 2.5rem;
+            padding: 25px 50px;
+            background: linear-gradient(45deg, #ff8a00, #e52e71);
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin: 0 10px;
+        }
+       
+        #scenario-nav button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        /* ------------------------------
+       Animations and Modal Styles
+       ------------------------------ */
+       
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+       
+        .button-click {
+            animation: pop 0.2s ease;
+        }
+       
+        @keyframes pop {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(0.9);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+       
+        .shake {
+            animation: shake 0.5s;
+        }
+       
+        @keyframes shake {
+            0% {
+                transform: translateX(0);
+            }
+            25% {
+                transform: translateX(-5px);
+            }
+            50% {
+                transform: translateX(5px);
+            }
+            75% {
+                transform: translateX(-5px);
+            }
+            100% {
+                transform: translateX(0);
+            }
+        }
+       
+        #modal,
+        #finalModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+        }
+       
+        #modal-content,
+        #finalModalContent {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 350px;
+            margin: 150px auto;
+            text-align: center;
+        }
+       
+        @media (max-width: 800px) {
+            #start-screen h1 {
+                font-size: 15vh;
+            }
+            .instruction-screen p {
+                font-size: 1.2rem;
+            }
+            #scenario1-page .scenario,
+            #scenario2-page .scenario {
+                width: 95%;
+            }
+        }
+       
+        @media (max-width: 1024px) {
+            #instruction-nav button {
+                font-size: 2rem;
+                /* Reduce font size */
+                padding: 15px 30px;
+                /* Reduce padding */
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header id="header">
+        <button id="restart-button">Restart</button>
+    </header>
+
+    <div id="start-screen">
+        <button id="start-button">START</button>
+    </div>
+
+    <div id="instruction-container">
+        <div id="instruction-screen-1" class="instruction-screen">
+            <img src="assets/instructions1.png" alt="Instruction 1">
+        </div>
+        <div id="instruction-screen-2" class="instruction-screen">
+            <img src="assets/instructions3.png" alt="Instruction 2">
+        </div>
+        <div id="instruction-nav">
+            <button id="instruction-back">Back</button>
+            <button id="instruction-next">Next</button>
+        </div>
+    </div>
+
+    <div id="main-screen">
+        <div id="controls" style="display: none;">
+            <button id="add-card">Green Card</button>
+            <button id="remove-card">Red Card</button>
+        </div>
+        <div id="extra-animation" style="display: none; position: fixed; top: 40%; left: 50%; transform: translate(-50%, -50%); z-index: 10000;">
+            <img src="assets/confetti.gif" alt="Extra Animation - confetti">
+        </div>
+        <div id="sunburst" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999;">
+            <img src="assets/sunburst.gif" alt="Sun Burst Animation">
+        </div>
+        <div id="scenario1-page">
+            <div class="scenario">
+                <img src="assets/california.png" alt="Transparent California Overlay" class="transparent-overlay">
+                <h2 style="text-align: center;">
+                    TAKE A GUESS!?
+                </h2>
+                <div class="cards-container" id="cards-all">
+                    <div class="card" id="card-a1"></div>
+                    <div class="card" id="card-a2"></div>
+                    <div class="card" id="card-c1"></div>
+                    <div class="card" id="card-c2"></div>
+                    <div class="card" id="card-d1"></div>
+                    <div class="card" id="card-d2"></div>
+                    <div class="card" id="card-d3"></div>
+                    <div class="card" id="card-e1"></div>
+                    <div class="card" id="card-e2"></div>
+                    <div class="card" id="card-f1"></div>
+                </div>
+                <div class="message" id="message-ca"></div>
+                <h2 style="text-align: center;">
+                    What percentage of California's electricity is clean? (e.g. solar, hydro, wind, nuclear)
+                </h2>
+            </div>
+        </div>
+        <div id="scenario2-page" style="display: none;">
+            <div class="scenario">
+                <img src="assets/smc.png" alt="Transparent SMC Overlay" class="transparent-overlay">
+                <div class="cards-container" id="cards-all-sm">
+                    <div class="card" id="card-a1-sm"></div>
+                    <div class="card" id="card-a2-sm"></div>
+                    <div class="card" id="card-c1-sm"></div>
+                    <div class="card" id="card-c2-sm"></div>
+                    <div class="card" id="card-d1-sm"></div>
+                    <div class="card" id="card-d2-sm"></div>
+                    <div class="card" id="card-d3-sm"></div>
+                    <div class="card" id="card-e1-sm"></div>
+                    <div class="card" id="card-e2-sm"></div>
+                    <div class="card" id="card-f1-sm"></div>
+                </div>
+                <div class="message" id="message-sm"></div>
+                <h2 style="text-align: center;">
+                    What percentage of San Mateo County's electricity is clean?
+                </h2>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal">
+        <div id="modal-content">
+            <h2>Congratulations!</h2>
+            <p>Great job! Keep guessing the current state in San Mateo County!</p>
+            <button id="modal-close">Close</button>
+        </div>
+    </div>
+
+    <div id="finalModal">
+        <div id="finalModalContent">
+            <h2>Congratulations!</h2>
+            <p>
+                You have completed the challenge! Renewable energy is essential for a sustainable future. Clean energy reduces greenhouse gas emissions, improves air quality, and creates green jobs. Keep learning about renewable energy and help build a better tomorrow!
+            </p>
+            <button id="theEndButton">The End</button>
+        </div>
+    </div>
+
+    <div id="theEndScreen" style="display: none;">
+        <div id="theEndContent" style="text-align: center; padding: 20px;">
+            <img src="assets/gameover.jpg" alt="Game Over" style="width: 100vw; height: 100vh; object-fit: cover;">
+        </div>
+    </div>
+
+
+    <script>
+        // Wrap all DOM-related code in a DOMContentLoaded callback
+        document.addEventListener("DOMContentLoaded", function() {
+
+            // ------------------------------
+            // DOM Element References
+            // ------------------------------
+            const startButton = document.getElementById('start-button');
+            const startScreen = document.getElementById('start-screen');
+            const instructionContainer = document.getElementById('instruction-container');
+            const instructionScreens = document.getElementsByClassName('instruction-screen');
+            const instructionBack = document.getElementById('instruction-back');
+            const instructionNext = document.getElementById('instruction-next');
+            const mainScreen = document.getElementById('main-screen');
+            const header = document.getElementById('header');
+            const restartButton = document.getElementById('restart-button');
+            const scenario1Page = document.getElementById('scenario1-page');
+            const cardsCA = document.getElementById('cards-all');
+            const cardsSM = document.getElementById('cards-all-sm');
+            const messageCA = document.getElementById('message-ca');
+            const scenario1Next = document.getElementById('scenario1-next');
+            const scenario2Page = document.getElementById('scenario2-page');
+            const messageSM = document.getElementById('message-sm');
+            const scenario2Back = document.getElementById('scenario2-back');
+            const addCardButton = document.getElementById('add-card');
+            const removeCardButton = document.getElementById('remove-card');
+            const modal = document.getElementById('modal');
+            const modalClose = document.getElementById('modal-close');
+            const finalModal = document.getElementById('finalModal');
+            const theEndScreen = document.getElementById('theEndScreen');
+            const theEndButton = document.getElementById('theEndButton');
+
+            if (theEndButton) {
+                theEndButton.addEventListener('click', () => {
+                    hideFinalModal();
+                    showTheEndScreen();
+                });
+            } else {
+                console.error("Element with ID 'theEndButton' not found.");
+            }
+
+            // ------------------------------
+            // Helper: animateButton
+            // ------------------------------
+            function animateButton(button) {
+                button.classList.add('button-click');
+                setTimeout(function() {
+                    button.classList.remove('button-click');
+                }, 200);
+            }
+
+            // ------------------------------
+            // Helper: animateElement
+            // ------------------------------
+            function animateElement(element, animationClass, duration) {
+                duration = duration || 500;
+                element.classList.add(animationClass);
+                setTimeout(function() {
+                    element.classList.remove(animationClass);
+                }, duration);
+            }
+
+            // ------------------------------
+            // Sound Effects Setup
+            // ------------------------------
+            const clickSound = new Audio('assets/SoundWindowsNavigationStart.wav');
+            const scenarioCASound_Start = new Audio('assets/05-California.mp3');
+            const scenarioCASound_30 = new Audio('assets/SoundScenarioCA_30.mp3');
+            const scenarioCASound_win = new Audio('assets/SoundScenarioCA_win.mp3');
+            const scenarioSMCSound_Start = new Audio('assets/SoundScenarioSMC_Start.mp3');
+            const scenarioSMCSound_70 = new Audio('assets/SoundScenarioSMC_70.mp3');
+            const scenarioSMCSound_win = new Audio('assets/SoundScenarioSMC_win.mp3');
+            const wrongSound = new Audio('assets/SoundWindowsCriticalStop.mp3');
+            const welcomeSound = new Audio('assets/01-Welcome.mp3');
+            const instruction1Sound = new Audio('assets/02-Green Card.mp3');
+            const instruction2Sound = new Audio('assets/03-Red Card.mp3');
+            const instruction3Sound = new Audio('assets/04-Tap.mp3');
+            const winSound = new Audio('assets/Tada_final.mp3');
+            const wrongWrongSound = new Audio('assets/SoundWindowsCriticalWarning.mp3');
+
+            // ------------------------------
+            // Global Variables and DOM References
+            // ------------------------------
+            let socket;
+            let instructionSoundTimer;
+            let currentSound = null;
+            let cardCount = 0;
+            let currentInstruction = 1;
+            const totalInstructions = 2; // Updated from 3 to 2
+            let consecutiveRedCount = 0;
+            let milestone30Played = false;
+            let milestone56Played = false;
+            let milestone70Played = false;
+            let milestone100Played = false;
+
+            // Track LED states even when cards aren't visible
+            let ledStates = {};
+
+            // ------------------------------
+            // WebSocket Integration
+            // ------------------------------
+            socket = new WebSocket("ws://localhost:80");
+            socket.onopen = () => {
+                console.log("Connected to SIM Mateo WebSocket server");
+            };
+            socket.onmessage = (event) => {
+                console.log("Received from Arduino:", event.data);
+                let rawMsg = event.data.trim();
+                if (rawMsg.toLowerCase().includes("from nano")) {
+                    const colonIndex = rawMsg.indexOf(":");
+                    if (colonIndex !== -1) {
+                        rawMsg = rawMsg.substring(colonIndex + 1).trim();
+                    }
+                }
+                const message = rawMsg.toLowerCase();
+                const regex = /^(a1|a2|c1|c2|d1|d2|d3|e1|e2|f1)_(green|red)$/i;
+                const match = message.match(regex);
+                if (!match) {
+                    console.log("Message didn't match regex:", message);
+                    return;
+                }
+
+                const board = match[1].toLowerCase();
+                const color = match[2].toLowerCase();
+
+                // Store the LED state regardless of which screen we're on
+                ledStates[board] = color;
+                console.log("Saved LED state:", board, "=", color, "| All states:", ledStates);
+
+                let cardId;
+                if (scenario1Page.style.display !== 'none') {
+                    cardId = "card-" + board;
+                    console.log("Scenario 1 is visible, updating card:", cardId);
+                } else if (scenario2Page.style.display !== 'none') {
+                    cardId = "card-" + board + "-sm";
+                    console.log("Scenario 2 is visible, updating card:", cardId);
+                }
+                const cardElement = document.getElementById(cardId);
+                if (!cardElement) {
+                    console.log("Card element not found yet (screen:", scenario1Page.style.display, scenario2Page.style.display, "), state saved for later");
+                    return;
+                }
+
+                if (color === "green") {
+                    cardElement.classList.add("green");
+                    playSound(clickSound)
+                    consecutiveRedCount = 0;
+                } else {
+                    cardElement.classList.remove("green");
+                    consecutiveRedCount += 1;
+                    if (consecutiveRedCount > 3) {
+                        playSound(wrongWrongSound);
+                    } else {
+                        playSound(wrongSound);
+                    }
+                }
+                updateProgress();
+            };
+
+            const boardCommands = ["A1", "A2", "C1", "C2", "D1", "D2", "D3", "E1", "E2", "F1"];
+            let boardIndex = 0;
+
+            function playSound(newSound) {
+                if (currentSound && !currentSound.paused) {
+                    currentSound.pause();
+                    currentSound.currentTime = 0;
+                }
+                currentSound = newSound;
+                const playPromise = newSound.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => {
+                        console.error("Audio play error:", error);
+                    });
+                }
+            }
+
+            function updateProgress() {
+                let greenCards = 0;
+                if (scenario1Page.style.display !== 'none') {
+                    greenCards = document.querySelectorAll("#cards-all .card.green").length;
+                } else if (scenario2Page.style.display !== 'none') {
+                    greenCards = document.querySelectorAll("#cards-all-sm .card.green").length;
+                }
+                cardCount = greenCards;
+                if (scenario1Page.style.display !== 'none' && cardCount === 5) {
+                    setTimeout(() => {
+                        if (scenario1Page.style.display !== 'none') {
+                            scenario1Page.style.display = 'none';
+                            scenario2Page.style.display = 'flex';
+                            initializeScenario2Cards();
+                        }
+                    }, 5000);
+                }
+                updateUI();
+            }
+
+            function initializeCards() {
+                if (cardsCA && cardsCA.innerHTML.trim() === "") {
+                    boardCommands.forEach(boardCmd => {
+                        const card = document.createElement('div');
+                        card.classList.add('card');
+                        card.id = "card-" + boardCmd.toLowerCase();
+                        cardsCA.appendChild(card);
+                    });
+                }
+            }
+
+            function initializeScenario2Cards() {
+                if (cardsSM) {
+                    cardsSM.innerHTML = '';
+                    boardCommands.forEach(boardCmd => {
+                        const card = document.createElement('div');
+                        card.classList.add('card');
+                        card.id = "card-" + boardCmd.toLowerCase() + "-sm";
+                        let sourceCard = document.getElementById("card-" + boardCmd.toLowerCase());
+                        if (sourceCard && sourceCard.classList.contains("green")) {
+                            card.classList.add("green");
+                        }
+                        cardsSM.appendChild(card);
+                    });
+                }
+            }
+
+            function createCards(container) {
+                container.innerHTML = '';
+                boardCommands.forEach(boardCmd => {
+                    const card = document.createElement('div');
+                    card.classList.add('card');
+                    card.id = "card-" + boardCmd.toLowerCase();
+                    container.appendChild(card);
+                });
+            }
+            function createCardsScenario2(container) {
+                container.innerHTML = '';
+                boardCommands.forEach(boardCmd => {
+                    const card = document.createElement('div');
+                    card.classList.add('card');
+                    card.id = "card-" + boardCmd.toLowerCase() + "-sm";
+                    container.appendChild(card);
+                });
+            }
+
+            function updateUI() {
+                if (scenario1Page.style.display !== 'none') {
+                    if (cardCount === 3 && !milestone30Played) {
+                        messageCA.textContent = "California state has reached 30% clean energy by 1985!";
+                        playSound(scenarioCASound_30);
+                        animateElement(messageCA, 'button-click', 300);
+                        milestone30Played = true;
+                    } else if (cardCount === 5 && !milestone56Played) {
+                        messageCA.textContent = "Thatâ€™s right! California currently uses about 56% of clean electricity!";
+                        playSound(winSound);
+                        const sunburstEl = document.getElementById('sunburst');
+                        const extraAnimationEl = document.getElementById('extra-animation');
+                        sunburstEl.style.display = 'block';
+                        extraAnimationEl.style.display = 'block';
+                        setTimeout(() => {
+                            sunburstEl.style.display = 'none';
+                            extraAnimationEl.style.display = 'none';
+                            playSound(scenarioCASound_win);
+                            scenarioCASound_win.addEventListener('ended', () => {
+                                setTimeout(() => {
+                                    playSound(scenarioSMCSound_Start);
+                                }, 1000);
+                            }, { once: true });
+                        }, 1500);
+                        setTimeout(showModal, 500);
+                        milestone56Played = true;
+                    } else {
+                        messageCA.textContent = "";
+                    }
+                }
+                if (scenario2Page.style.display !== 'none') {
+                    if (cardCount === 7) {
+                        messageSM.textContent = "Youâ€™re getting close! San Mateo reached 75% clean electricity in 2016";
+                        playSound(scenarioSMCSound_70);
+                        animateElement(messageSM, 'button-click', 300);
+                        milestone70Played = true;
+                    } else if (cardCount === 10) {
+                        messageSM.textContent = "You got it! San Mateo serves 100% clean electricity â€“ leading the nation!";
+                        playSound(scenarioSMCSound_win);
+                        animateElement(messageSM, 'button-click', 300);
+                        milestone100Played = true;
+                        setTimeout(showFinalModal, 1000);
+                    } else {
+                        messageSM.textContent = "";
+                    }
+                }
+            }
+
+            function resetExhibit() {
+		if (socket && socket.readyState === WebSocket.OPEN) {
+			socket.send("RESTART\n");
+			console.log("Sent global reset command to Arduino");
+		}
+                cardCount = 0;
+                currentInstruction = 1;
+                boardIndex = 0;
+                ledStates = {}; // Clear saved LED states
+                instructionContainer.style.display = 'none';
+                mainScreen.style.display = 'none';
+                scenario1Page.style.display = 'none';
+                scenario2Page.style.display = 'none';
+                modal.style.display = 'none';
+                finalModal.style.display = 'none';
+                header.style.display = 'none';
+                messageCA.textContent = "";
+                messageSM.textContent = "";
+                startScreen.style.display = 'flex';
+                milestone30Played = false;
+                milestone56Played = false;
+                milestone70Played = false;
+                milestone100Played = false;
+                createCards(cardsCA);
+                createCardsScenario2(cardsSM);
+            }
+
+            function showInstructionScreen(index) {
+                if (instructionSoundTimer) {
+                    clearTimeout(instructionSoundTimer);
+                    instructionSoundTimer = null;
+                }
+                currentInstruction = index;
+                for (let i = 0; i < instructionScreens.length; i++) {
+                    instructionScreens[i].style.display = 'none';
+                }
+                document.getElementById('instruction-screen-' + index).style.display = 'flex';
+                instructionBack.style.display = (index === 1) ? 'none' : 'inline-block';
+                instructionNext.textContent = (index === totalInstructions) ? 'Continue' : 'Next';
+
+                switch (index) {
+                    case 1:
+                        instructionSoundTimer = setTimeout(() => {
+                            playSound(instruction1Sound);
+                        }, 5200);
+                        break;
+                    case 2:
+                        // Now playing the tap sound as instruction 2
+                        playSound(instruction3Sound);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            instructionBack.addEventListener('click', () => {
+                animateButton(instructionBack);
+                if (currentInstruction > 1) {
+                    showInstructionScreen(currentInstruction - 1);
+                }
+            });
+            instructionNext.addEventListener('click', () => {
+                animateButton(instructionNext);
+                if (currentInstruction < totalInstructions) {
+                    showInstructionScreen(currentInstruction + 1);
+                } else {
+                    if (instructionSoundTimer) {
+                        clearTimeout(instructionSoundTimer);
+                        instructionSoundTimer = null;
+                    }
+                    instructionContainer.style.display = 'none';
+                    mainScreen.style.display = 'block';
+                    showScenario1();
+                    updateUI();
+                }
+            });
+
+            function showScenario1() {
+                console.log("=== SHOWING SCENARIO 1 ===");
+                console.log("Current LED states:", ledStates);
+                scenario1Page.style.display = 'flex';
+                scenario2Page.style.display = 'none';
+                playSound(scenarioCASound_Start);
+                initializeCards();
+                
+                // Apply any LED states that were received before cards were created
+                boardCommands.forEach(boardCmd => {
+                    const board = boardCmd.toLowerCase();
+                    console.log("Checking board:", board, "has state:", ledStates[board]);
+                    if (ledStates[board]) {
+                        const cardElement = document.getElementById("card-" + board);
+                        console.log("Found card element:", cardElement ? "YES" : "NO");
+                        if (cardElement) {
+                            if (ledStates[board] === "green") {
+                                console.log("Applying GREEN to", board);
+                                cardElement.classList.add("green");
+                            } else {
+                                console.log("Applying RED to", board);
+                                cardElement.classList.remove("green");
+                            }
+                        }
+                    }
+                });
+                updateProgress();
+                console.log("=== SCENARIO 1 SETUP COMPLETE ===");
+            }
+            function showScenario2() {
+                scenario1Page.style.display = 'none';
+                scenario2Page.style.display = 'flex';
+            }
+
+            startButton.addEventListener('click', () => {
+                animateButton(startButton);
+                playSound(clickSound);
+                playSound(welcomeSound);
+                startScreen.style.display = 'none';
+                header.style.display = 'block';
+                instructionContainer.style.display = 'flex';
+                showInstructionScreen(1);
+            });
+           
+            addCardButton.addEventListener('click', () => {
+                animateButton(addCardButton);
+                playSound(clickSound);
+                if (cardCount < 10) {
+                    cardCount++;
+                    updateUI();
+                    sendCommand("green");
+                }
+            });
+            removeCardButton.addEventListener('click', () => {
+                animateButton(removeCardButton);
+                playSound(wrongSound);
+                if (cardCount > 0) {
+                    cardCount--;
+                    updateUI();
+                    sendCommand("red");
+                }
+            });
+            restartButton.addEventListener('click', function() {
+                resetExhibit();
+            });
+
+            function showModal() {
+                modal.style.display = 'block';
+                setTimeout(hideModal, 2000);
+            }
+            function hideModal() {
+                modal.style.display = 'none';
+            }
+            modalClose.addEventListener('click', () => {
+                hideModal();
+                if (scenario1Page.style.display !== 'none') {
+                    showScenario2();
+                    playSound(scenarioSMCSound_Start);
+                }
+            });
+            function showFinalModal() {
+                finalModal.style.display = 'block';
+            }
+            function hideFinalModal() {
+                finalModal.style.display = 'none';
+            }
+
+            function sendCommand(color) {
+                const boardCmd = boardCommands[boardIndex];
+                const command = boardCmd + "_" + color.toUpperCase();
+                setTimeout(() => {
+                    socket.send(command + "\n");
+                    boardIndex = (boardIndex + 1) % boardCommands.length;
+                }, 200);
+            }
+
+            function showTheEndScreen() {
+                mainScreen.style.display = 'none';
+                scenario2Page.style.display = 'none';
+                modal.style.display = 'none';
+                finalModal.style.display = 'none';
+                theEndScreen.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

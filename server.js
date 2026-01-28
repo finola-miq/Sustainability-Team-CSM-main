@@ -1,0 +1,115 @@
+import { SerialPort } from "serialport";
+import { ReadlineParser } from "@serialport/parser-readline";
+import express from "express";
+import http from "http";
+import { WebSocketServer, WebSocket } from "ws";
+import { fileURLToPath } from 'url';
+import path from 'path';
+import fs from 'fs';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Create a log file
+const logFile = path.join(__dirname, 'server-debug.log');
+function log(message) {
+    const timestamp = new Date().toISOString();
+    const logMessage = `[${timestamp}] ${message}`;
+    console.log(logMessage);
+//    fs.appendFileSync(logFile, logMessage + '\n');
+}
+
+log('SERVER STARTING');
+
+const app = express();
+const port = 80;
+
+app.use(express.static(__dirname));
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+const server = http.createServer(app);
+const wss = new WebSocketServer({ server });
+
+let primaryWs = null;
+let messageQueue = [];
+let arduinoSerial = null;
+
+async function startSerial() {
+    try {
+        const ports = await SerialPort.list();
+        const arduinoPort = ports.find(p => p.path.includes('/dev/ttyUSB') || p.path.includes('/dev/ttyACM'));
+
+        if (!arduinoPort) {
+            log("No Arduino found. Waiting...");
+            setTimeout(startSerial, 5000);
+            return;
+        }
+
+        arduinoSerial = new SerialPort({ path: arduinoPort.path, baudRate: 9600 });
+        const parser = arduinoSerial.pipe(new ReadlineParser({ delimiter: "\n" }));
+
+        log(`Connected to Arduino at: ${arduinoPort.path}`);
+
+        parser.on("data", (data) => {
+            const command = data.trim().toLowerCase();
+            log(`[Arduino→Server] ${command}`);
+            if (primaryWs && primaryWs.readyState === WebSocket.OPEN) {
+                primaryWs.send(command);
+                log(`[Server→Browser] Forwarded: ${command}`);
+            } else {
+                messageQueue.push(command);
+                log(`[Server] Queued (no browser connected): ${command}`);
+            }
+        });
+        
+        arduinoSerial.on('error', (err) => {
+            log(`[Serial ERROR] ${err.message}`);
+        });
+        
+        arduinoSerial.on('close', () => {
+            log('[Serial] Connection closed');
+        });
+        
+    } catch (e) { 
+        log(`[Serial Error] ${e.message}`);
+    }
+}
+
+wss.on("connection", (ws) => {
+    log("Browser connected via WebSocket");
+    primaryWs = ws;
+
+    ws.on("message", (data) => {
+        const message = data.toString().trim();
+        log(`[Browser→Server] Received: ${message}`);
+        
+        if (arduinoSerial && arduinoSerial.isOpen) {
+            arduinoSerial.write(message + "\n");
+            log(`[Server→Arduino] Forwarded: ${message}`);
+        } else {
+            log(`[Server] ERROR: Cannot forward to Arduino - serial port not open`);
+        }
+    });
+    
+    ws.on('close', () => {
+        log('[WebSocket] Browser disconnected');
+    });
+    
+    ws.on('error', (err) => {
+        log(`[WebSocket ERROR] ${err.message}`);
+    });
+
+    while(messageQueue.length > 0) { 
+        const msg = messageQueue.shift();
+        ws.send(msg);
+        log(`[Server→Browser] Sent queued message: ${msg}`);
+    }
+});
+
+server.listen(port, () => {
+    log(`Server running on http://localhost:${port}`);
+    startSerial();
+});

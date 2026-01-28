@@ -1,0 +1,48 @@
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f0f0f0;
+    width: 100vw;
+    /* Set the width to 100% of the viewport width */
+    padding: 0;
+}
+
+.flex-container {
+    display: flex;
+    flex-direction: column;
+    width: 60vw;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.flex-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.video-segment {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+    /* Hide any overflowing content */
+    width: 100%;
+    /* Ensure it takes the full width of the grid cell */
+    height: 100%;
+    /* Ensure it takes the full height of the grid cell */
+}
+
+.video-segment video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Ensure the video covers the entire container */
+}
