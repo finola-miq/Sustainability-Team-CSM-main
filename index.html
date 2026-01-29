@@ -629,8 +629,6 @@
             let milestone70Played = false;
             let milestone100Played = false;
 
-            // Track LED states even when cards aren't visible
-            let ledStates = {};
 
             // ------------------------------
             // WebSocket Integration
@@ -642,40 +640,40 @@
             socket.onmessage = (event) => {
                 console.log("Received from Arduino:", event.data);
                 let rawMsg = event.data.trim();
+                
+                // Handle special messages (like reset confirmation)
+                if (rawMsg.includes("Resetting LEDs")) {
+                    console.log("✅ Arduino confirmed RESET!");
+                    return;
+                }
+                
                 if (rawMsg.toLowerCase().includes("from nano")) {
                     const colonIndex = rawMsg.indexOf(":");
                     if (colonIndex !== -1) {
                         rawMsg = rawMsg.substring(colonIndex + 1).trim();
                     }
                 }
+                
                 const message = rawMsg.toLowerCase();
                 const regex = /^(a1|a2|c1|c2|d1|d2|d3|e1|e2|f1)_(green|red)$/i;
                 const match = message.match(regex);
+                
                 if (!match) {
-                    console.log("Message didn't match regex:", message);
+                    console.log("Message didn't match regex:", rawMsg);
                     return;
                 }
 
                 const board = match[1].toLowerCase();
                 const color = match[2].toLowerCase();
 
-                // Store the LED state regardless of which screen we're on
-                ledStates[board] = color;
-                console.log("Saved LED state:", board, "=", color, "| All states:", ledStates);
-
                 let cardId;
                 if (scenario1Page.style.display !== 'none') {
                     cardId = "card-" + board;
-                    console.log("Scenario 1 is visible, updating card:", cardId);
                 } else if (scenario2Page.style.display !== 'none') {
                     cardId = "card-" + board + "-sm";
-                    console.log("Scenario 2 is visible, updating card:", cardId);
                 }
                 const cardElement = document.getElementById(cardId);
-                if (!cardElement) {
-                    console.log("Card element not found yet (screen:", scenario1Page.style.display, scenario2Page.style.display, "), state saved for later");
-                    return;
-                }
+                if (!cardElement) return;
 
                 if (color === "green") {
                     cardElement.classList.add("green");
@@ -825,14 +823,23 @@
             }
 
             function resetExhibit() {
-		if (socket && socket.readyState === WebSocket.OPEN) {
-			socket.send("RESTART\n");
-			console.log("Sent global reset command to Arduino");
-		}
+                console.log("=== RESET BUTTON CLICKED ===");
+                console.log("Socket exists:", !!socket);
+                console.log("Socket readyState:", socket ? socket.readyState : "no socket");
+                console.log("WebSocket.OPEN constant:", WebSocket.OPEN);
+                
+                if (socket && socket.readyState === WebSocket.OPEN) {
+                    socket.send("RESTART");  // Server adds \n
+                    console.log("✓ Sent RESTART command to server");
+                } else {
+                    console.error("✗ Cannot send - WebSocket not open!");
+                    console.error("Socket state:", socket ? socket.readyState : "null");
+                    return;  // Don't reset UI if command didn't send
+                }
+                
                 cardCount = 0;
                 currentInstruction = 1;
                 boardIndex = 0;
-                ledStates = {}; // Clear saved LED states
                 instructionContainer.style.display = 'none';
                 mainScreen.style.display = 'none';
                 scenario1Page.style.display = 'none';
@@ -849,6 +856,7 @@
                 milestone100Played = false;
                 createCards(cardsCA);
                 createCardsScenario2(cardsSM);
+                console.log("=== UI RESET COMPLETE ===");
             }
 
             function showInstructionScreen(index) {
@@ -901,33 +909,10 @@
             });
 
             function showScenario1() {
-                console.log("=== SHOWING SCENARIO 1 ===");
-                console.log("Current LED states:", ledStates);
                 scenario1Page.style.display = 'flex';
                 scenario2Page.style.display = 'none';
                 playSound(scenarioCASound_Start);
                 initializeCards();
-                
-                // Apply any LED states that were received before cards were created
-                boardCommands.forEach(boardCmd => {
-                    const board = boardCmd.toLowerCase();
-                    console.log("Checking board:", board, "has state:", ledStates[board]);
-                    if (ledStates[board]) {
-                        const cardElement = document.getElementById("card-" + board);
-                        console.log("Found card element:", cardElement ? "YES" : "NO");
-                        if (cardElement) {
-                            if (ledStates[board] === "green") {
-                                console.log("Applying GREEN to", board);
-                                cardElement.classList.add("green");
-                            } else {
-                                console.log("Applying RED to", board);
-                                cardElement.classList.remove("green");
-                            }
-                        }
-                    }
-                });
-                updateProgress();
-                console.log("=== SCENARIO 1 SETUP COMPLETE ===");
             }
             function showScenario2() {
                 scenario1Page.style.display = 'none';

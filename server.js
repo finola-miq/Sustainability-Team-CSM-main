@@ -5,18 +5,14 @@ import http from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import { fileURLToPath } from 'url';
 import path from 'path';
-import fs from 'fs';
+import { exec } from 'child_process'; // We need this to run the echo command
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Create a log file
-const logFile = path.join(__dirname, 'server-debug.log');
 function log(message) {
     const timestamp = new Date().toISOString();
-    const logMessage = `[${timestamp}] ${message}`;
-    console.log(logMessage);
-//    fs.appendFileSync(logFile, logMessage + '\n');
+    console.log(`[${timestamp}] ${message}`);
 }
 
 log('SERVER STARTING');
@@ -36,6 +32,7 @@ const wss = new WebSocketServer({ server });
 let primaryWs = null;
 let messageQueue = [];
 let arduinoSerial = null;
+let currentPortPath = ""; // We need to remember the path (e.g., /dev/ttyACM0)
 
 async function startSerial() {
     try {
@@ -48,10 +45,12 @@ async function startSerial() {
             return;
         }
 
-        arduinoSerial = new SerialPort({ path: arduinoPort.path, baudRate: 9600 });
+        currentPortPath = arduinoPort.path; // Save the path for the echo command
+        
+        arduinoSerial = new SerialPort({ path: currentPortPath, baudRate: 9600 });
         const parser = arduinoSerial.pipe(new ReadlineParser({ delimiter: "\n" }));
 
-        log(`Connected to Arduino at: ${arduinoPort.path}`);
+        log(`Connected to Arduino at: ${currentPortPath}`);
 
         parser.on("data", (data) => {
             const command = data.trim().toLowerCase();
@@ -61,7 +60,6 @@ async function startSerial() {
                 log(`[Server→Browser] Forwarded: ${command}`);
             } else {
                 messageQueue.push(command);
-                log(`[Server] Queued (no browser connected): ${command}`);
             }
         });
         
@@ -70,11 +68,12 @@ async function startSerial() {
         });
         
         arduinoSerial.on('close', () => {
-            log('[Serial] Connection closed');
+            log('[Serial] Connection closed temporarily');
         });
         
     } catch (e) { 
         log(`[Serial Error] ${e.message}`);
+        setTimeout(startSerial, 5000);
     }
 }
 
@@ -86,26 +85,39 @@ wss.on("connection", (ws) => {
         const message = data.toString().trim();
         log(`[Browser→Server] Received: ${message}`);
         
-        if (arduinoSerial && arduinoSerial.isOpen) {
-            arduinoSerial.write(message + "\n");
-            log(`[Server→Arduino] Forwarded: ${message}`);
-        } else {
-            log(`[Server] ERROR: Cannot forward to Arduino - serial port not open`);
+        if (message === "RESTART") {
+            log("Running system ECHO command to force reset...");
+            
+            // 1. Close the official connection so the file isn't "Busy"
+            if (arduinoSerial && arduinoSerial.isOpen) {
+                arduinoSerial.close((err) => {
+                    // 2. Run the exact Linux command that worked for you
+                    // We use currentPortPath (e.g. /dev/ttyACM0)
+                    exec(`echo "RESTART" > ${currentPortPath}`, (error, stdout, stderr) => {
+                        if (error) {
+                            log(`[Echo Failed] ${error.message}`);
+                        } else {
+                            log(`[Echo Success] Command sent via shell.`);
+                        }
+                        
+                        // 3. Reconnect to the Arduino immediately after
+                        setTimeout(startSerial, 500); 
+                    });
+                });
+            }
+        } 
+        else {
+            // Normal behavior for other messages
+            if (arduinoSerial && arduinoSerial.isOpen) {
+                arduinoSerial.write(message + "\n");
+                log(`[Server→Arduino] Forwarded: ${message}`);
+            }
         }
-    });
-    
-    ws.on('close', () => {
-        log('[WebSocket] Browser disconnected');
-    });
-    
-    ws.on('error', (err) => {
-        log(`[WebSocket ERROR] ${err.message}`);
     });
 
     while(messageQueue.length > 0) { 
         const msg = messageQueue.shift();
         ws.send(msg);
-        log(`[Server→Browser] Sent queued message: ${msg}`);
     }
 });
 

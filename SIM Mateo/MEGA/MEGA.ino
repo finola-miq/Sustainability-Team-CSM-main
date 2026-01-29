@@ -1,4 +1,4 @@
- // function prototypes (optional, but helps readability)
+// function prototypes (optional, but helps readability)
 void processSerialCommands();
 void handleLEDCommand(String command);
 bool checkGroupsActive();
@@ -418,5 +418,5 @@ void resetLEDs() {
   digitalWrite(LED_RED_E1, LOW);    digitalWrite(LED_GREEN_E1, HIGH);
   digitalWrite(LED_RED_E2, LOW);    digitalWrite(LED_GREEN_E2, HIGH);
 
-  digitalWrite(LED_RED_F1, LOW);    digitalWrite(LED_GREEN_F1, HIGH);
+  digitalWrite(LED_RED_F1, LOW);    digitalWrite(LED_GREEN_F1, HIGH); 
 }
